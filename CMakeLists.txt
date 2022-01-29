@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(async_udp_chat_peer)
+project(chatty)
 
 add_executable(${PROJECT_NAME} main.cpp)
 
