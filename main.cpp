@@ -8,7 +8,6 @@ constexpr std::uint16_t multicast_port = 30001;
 class Peer {
 public:
     Peer(boost::asio::io_context& io_context,
-         const boost::asio::ip::address& listen_address,
          const boost::asio::ip::address& chat_room,
          const std::string& name)
         : socket_(io_context)
@@ -16,7 +15,7 @@ public:
         , name_(name)
     {
 
-        boost::asio::ip::udp::endpoint listen_endpoint(listen_address, multicast_port);
+        boost::asio::ip::udp::endpoint listen_endpoint(chat_room, multicast_port);
         socket_.open(listen_endpoint.protocol());
         socket_.set_option(boost::asio::ip::udp::socket::reuse_address(true));
         socket_.bind(listen_endpoint);
@@ -81,7 +80,7 @@ int main(int argc, char* argv[])
 
     boost::asio::io_context io_context;
     boost::asio::ip::address chat_room(boost::asio::ip::make_address(argv[2]));
-    Peer peer(io_context, boost::asio::ip::make_address("0.0.0.0"), chat_room, argv[1]);
+    Peer peer(io_context, chat_room, argv[1]);
 
     boost::asio::post(thread_pool, [&]{
         peer.do_receive();
