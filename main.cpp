@@ -3,7 +3,7 @@
 
 #include <boost/asio.hpp>
 
-constexpr std::uint16_t multicast_port = 30001;
+constexpr std::uint16_t chatty_port = 30001;
 
 class Peer {
 public:
@@ -11,14 +11,14 @@ public:
          const boost::asio::ip::address& chat_room,
          const std::string& name)
         : socket_(io_context)
-        , multicast_endpoint_(chat_room, multicast_port)
+        , multicast_endpoint_(chat_room, chatty_port)
         , name_(name)
     {
 
-        boost::asio::ip::udp::endpoint listen_endpoint(chat_room, multicast_port);
-        socket_.open(listen_endpoint.protocol());
+        boost::asio::ip::udp::endpoint room_endpoint(chat_room, chatty_port);
+        socket_.open(room_endpoint.protocol());
         socket_.set_option(boost::asio::ip::udp::socket::reuse_address(true));
-        socket_.bind(listen_endpoint);
+        socket_.bind(room_endpoint);
 
         socket_.set_option(boost::asio::ip::multicast::join_group(chat_room));
 
