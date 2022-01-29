@@ -75,7 +75,7 @@ int main(int argc, char* argv[])
     boost::asio::thread_pool thread_pool(2);
 
     if(argc != 3){
-        std::cerr << "Usage: ./async_udp_chat_peer <name> <multicast_address>" << std::endl;
+        std::cerr << "Usage: ./chatty <your_nickname> <multicast_address>" << std::endl;
         std::exit(1);
     }
 
