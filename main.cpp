@@ -9,10 +9,10 @@ class Peer {
 public:
     Peer(boost::asio::io_context& io_context,
          const boost::asio::ip::address& chat_room,
-         const std::string& name)
+         const std::string& nickname)
         : socket_(io_context)
         , room_endpoint_(chat_room, chatty_port)
-        , name_(name)
+        , nickname_(nickname)
     {
         socket_.open(room_endpoint_.protocol());
         socket_.set_option(boost::asio::ip::udp::socket::reuse_address(true));
@@ -20,7 +20,7 @@ public:
 
         socket_.set_option(boost::asio::ip::multicast::join_group(chat_room));
 
-        auto welcome_message = std::string(name_ + " connected to the chat");
+        auto welcome_message = std::string(nickname_ + " connected to the chat");
 
         socket_.async_send_to(boost::asio::buffer(welcome_message), room_endpoint_,
                               [this](const boost::system::error_code& error_code, std::size_t bytes_sent){
@@ -35,7 +35,7 @@ public:
                               [this](const boost::system::error_code& error_code, std::size_t bytes_received){
             if (!error_code.failed() && bytes_received > 0){
                 auto received_message_string = std::string(receiving_buffer_.begin(), receiving_buffer_.begin() + bytes_received);
-                if (received_message_string.find(name_) != 0){
+                if (received_message_string.find(nickname_) != 0){
                     std::cout.write(receiving_buffer_.data(), bytes_received);
                     std::cout << "" << std::endl;
                 }
@@ -45,10 +45,10 @@ public:
     }
 
     void do_send(){
-        std::string name = name_;
+        std::string nickname = nickname_;
         std::string message;
         std::getline(std::cin, message);
-        std::string buffer = name.append(": " + message);
+        std::string buffer = nickname.append(": " + message);
         socket_.async_send_to(boost::asio::buffer(buffer, maximum_message_size_), room_endpoint_,
                            [this, message](const boost::system::error_code& /*error_code*/, std::size_t bytes_sent){
             std::cout << "You: " << message << std::endl;
@@ -60,7 +60,7 @@ public:
 private:
     std::size_t maximum_message_size_ = 128;
     std::array<char, 128> receiving_buffer_;
-    std::string name_;
+    std::string nickname_;
     boost::asio::ip::udp::socket socket_;
     boost::asio::ip::udp::endpoint remote_endpoint_;
     boost::asio::ip::udp::endpoint room_endpoint_;
