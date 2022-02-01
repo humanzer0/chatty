@@ -3,8 +3,6 @@
 
 #include <boost/asio.hpp>
 
-constexpr std::uint16_t chatty_port = 30001;
-
 namespace core {
 
 class Peer {
@@ -13,7 +11,7 @@ public:
          const boost::asio::ip::address& chat_room,
          const std::string& nickname)
         : socket_(io_context)
-        , room_endpoint_(chat_room, chatty_port)
+        , room_endpoint_(chat_room, chatty_port_)
         , nickname_(nickname)
     {
         socket_.open(room_endpoint_.protocol());
@@ -60,7 +58,9 @@ public:
     }
 
 private:
-    std::size_t maximum_message_size_ = 128;
+    constexpr static std::uint16_t chatty_port_ = 8000U;
+    constexpr static std::size_t maximum_message_size_ = 128;
+
     std::array<char, 128> receiving_buffer_;
     std::string nickname_;
     boost::asio::ip::udp::socket socket_;
