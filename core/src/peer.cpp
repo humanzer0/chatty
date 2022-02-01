@@ -19,7 +19,7 @@ Peer::Peer(boost::asio::io_context& io_context,
 
     socket_.async_send_to(boost::asio::buffer(welcome_message), room_endpoint_,
                           [this](const boost::system::error_code& error_code, std::size_t bytes_sent){
-        if (!error_code){
+        if (!error_code.failed() && bytes_sent > 0U){
             std::cout << "Entered chat room successfully" << std::endl;
         }
     });
